@@ -37,20 +37,30 @@ const item3  = new Item({
 // array cu itemel
 const defaultItems = [item1, item2, item3];
 
-// inserare itemlor
-Item.insertMany(defaultItems, function(err){
-  if (err){
-    console.log(err);
-  }else{
-    console.log("scucces saved default items to DB");
-  }
-})
+
 
 
 app.get("/", function(req, res) {
 
+  Item.find({}, function(err, foundItems){
 
-  res.render("list", {listTitle: "Today", newListItems: items});
+    if(foundItems.length === 0){
+      // inserare itemlor
+      Item.insertMany(defaultItems, function(err){
+        if (err){
+          console.log(err);
+        }else{
+          console.log("scucces saved default items to DB");
+        }
+      });
+      res.redirect("/");
+    } else {
+      res.render("list", {listTitle: "Today", newListItems: foundItems});
+    }
+    
+  })
+
+  
 
 });
 
