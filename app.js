@@ -12,8 +12,9 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+// --------- refactoring code for working with mongoDB ----------
 // conectare si creare baza de date
-mongoose.connect("mongodb://localhost:27017/todolistDB", {useNewUrlParser:true});
+mongoose.connect("mongodb://localhost:27017/todolistDB", {useUnifiedTopology:true, useNewUrlParser:true});
 const itemsSckema = {
   name : String
 };
@@ -23,7 +24,7 @@ const Item = mongoose.model(
   "Item", itemsSckema
 );
 
-// crearea  itemlor de inceput
+// crearea  itemlor de inceput/ new Document
 const item1  = new Item({
     name: "Welcome to your todolist!"
 }) ;
@@ -36,12 +37,13 @@ const item3  = new Item({
 
 // array cu itemel
 const defaultItems = [item1, item2, item3];
-
+// -----------------------------------------------------------------
 
 
 
 app.get("/", function(req, res) {
 
+  // -------- refactoring code for working with mongoDB ---------------
   Item.find({}, function(err, foundItems){
 
     if(foundItems.length === 0){
@@ -57,7 +59,7 @@ app.get("/", function(req, res) {
     } else {
       res.render("list", {listTitle: "Today", newListItems: foundItems});
     }
-    
+    // ------------------------------------------------------------------
   })
 
   
@@ -66,15 +68,18 @@ app.get("/", function(req, res) {
 
 app.post("/", function(req, res){
 
-  const item = req.body.newItem;
+  const itemName = req.body.newItem;
 
-  if (req.body.list === "Work") {
-    workItems.push(item);
-    res.redirect("/work");
-  } else {
-    items.push(item);
-    res.redirect("/");
-  }
+  // --------- refactoring code for working with mongoDB and add item to the todolistDB -------
+  const item = new Item({
+    name:itemName
+  });
+
+  item.save();
+
+  res.redirect("/");
+
+  // ----------------------------------------------------------
 });
 
 app.get("/work", function(req,res){
