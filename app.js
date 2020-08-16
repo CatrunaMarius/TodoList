@@ -15,9 +15,12 @@ app.use(express.static("public"));
 // --------- refactoring code for working with mongoDB ----------
 // conectare si creare baza de date
 mongoose.connect("mongodb://localhost:27017/todolistDB", {useUnifiedTopology:true, useNewUrlParser:true});
-const itemsSckema = {
+
+
+const Schema = mongoose.Schema;
+const itemsSckema = new Schema( {
   name : String
-};
+});
 
 // creare model
 const Item = mongoose.model(
@@ -39,13 +42,13 @@ const item3  = new Item({
 const defaultItems = [item1, item2, item3];
 // -----------------------------------------------------------------
 
-const listSheme = {
+const listSchema = new mongoose.Schema( {
   name: String,
   items:[itemsSckema]
 
-};
+});
 
-const List = mongoose.model("List", listSheme);
+const List = mongoose.model("List", listSchema);
 
 app.get("/", function(req, res) {
 
@@ -72,6 +75,8 @@ app.get("/", function(req, res) {
 
 });
 
+
+
 // ========= add new function (Create new list) ==============
 app.get("/:customListName", function(req, res){
   const customListName = req.params.customListName;
@@ -80,21 +85,24 @@ app.get("/:customListName", function(req, res){
  
 
   List.findOne({name: customListName}, function(err, foundList){
-    if (!err ){
+    if (!err){
       if(!foundList){
         // Create a new list
         const list = new List({
           name: customListName,
           items : defaultItems
+          
         })
         list.save();
-        res.redirect("/"+customListName);
-      }
+        res.redirect("/" +customListName);
+        // console.log(customListName);
+      
       
     }else{
       //Show an existing List
       res.render("list", {listTitle: foundList.name, newListItems: foundList.items});
     }
+  }
   })
 
  
