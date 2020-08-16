@@ -17,7 +17,7 @@ app.use(express.static("public"));
 
 // --------- refactoring code for working with mongoDB ----------
 // conectare si creare baza de date
-mongoose.connect("mongodb://localhost:27017/todolistDB", {useUnifiedTopology:true, useNewUrlParser:true});
+mongoose.connect("mongodb+srv://Admin-Marius:parola1234@cluster0.q8iwr.gcp.mongodb.net/todolistDB", {useUnifiedTopology:true, useNewUrlParser:true});
 
 
 
