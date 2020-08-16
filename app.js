@@ -17,10 +17,10 @@ app.use(express.static("public"));
 mongoose.connect("mongodb://localhost:27017/todolistDB", {useUnifiedTopology:true, useNewUrlParser:true});
 
 
-const Schema = mongoose.Schema;
-const itemsSckema = new Schema( {
+
+const itemsSckema =  {
   name : String
-});
+};
 
 // creare model
 const Item = mongoose.model(
@@ -42,11 +42,11 @@ const item3  = new Item({
 const defaultItems = [item1, item2, item3];
 // -----------------------------------------------------------------
 
-const listSchema = new mongoose.Schema( {
+const listSchema = {
   name: String,
   items:[itemsSckema]
 
-});
+};
 
 const List = mongoose.model("List", listSchema);
 
@@ -95,7 +95,7 @@ app.get("/:customListName", function(req, res){
         })
         list.save();
         res.redirect("/" +customListName);
-        // console.log(customListName);
+        
       
       
     }else{
@@ -114,15 +114,28 @@ app.get("/:customListName", function(req, res){
 app.post("/", function(req, res){
 
   const itemName = req.body.newItem;
+  const listName = req.body.list;
 
   // --------- refactoring code for working with mongoDB and add item to the todolistDB -------
   const item = new Item({
     name:itemName
   });
 
-  item.save();
+  // refactoring code for  add item to the new list create
+  if(listName === "Today"){
+    item.save();
+    res.redirect("/");
 
-  res.redirect("/");
+  }else{
+    List.findOne({name:listName}, function(err, foundList){
+      foundList.items.push(item);
+      foundList.save();
+      res.redirect("/" + listName);
+    });
+    // console.log("error");
+  }
+
+
 
   // ----------------------------------------------------------
 });
