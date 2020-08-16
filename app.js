@@ -82,6 +82,20 @@ app.post("/", function(req, res){
   // ----------------------------------------------------------
 });
 
+// add delete function
+app.post("/delete", function(req, res){
+  const checkedItemId = req.body.checkbox;
+
+  // remove item from mondoDB
+  Item.findByIdAndRemove(checkedItemId,function(err){
+    if(!err){
+      console.log("Succesdfully delete");
+  
+    }
+  })
+  res.redirect("/")
+})
+
 app.get("/work", function(req,res){
   res.render("list", {listTitle: "Work List", newListItems: workItems});
 });
