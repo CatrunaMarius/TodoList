@@ -3,7 +3,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
-const date = require(__dirname + "/date.js");
+// const date = require(__dirname + "/date.js");
+const _ = require("lodash");
+
+
 
 const app = express();
 
@@ -79,7 +82,8 @@ app.get("/", function(req, res) {
 
 // ========= add new function (Create new list) ==============
 app.get("/:customListName", function(req, res){
-  const customListName = req.params.customListName;
+ 
+  const customListName = _.capitalize(req.params.customListName);
 
   
  
@@ -143,15 +147,26 @@ app.post("/", function(req, res){
 // add delete function
 app.post("/delete", function(req, res){
   const checkedItemId = req.body.checkbox;
+  const listName = req.body.listName;
 
-  // remove item from mondoDB
-  Item.findByIdAndRemove(checkedItemId,function(err){
-    if(!err){
-      console.log("Succesdfully delete");
+  if (listName === "Today"){
+    // remove item from mondoDB 
+    Item.findByIdAndRemove(checkedItemId,function(err){
+      if(!err){
+        console.log("Succesdfully delete");
+        res.redirect("/")
+      }
+    })
+    
+  }else{
+    List.findOneAndUpdate({name:listName}, {$pull:{items:{_id:checkedItemId}}} , function(err, foundList){
+      if(!err){
+        res.redirect("/"+listName);
+      }
+    })
+  }
   
-    }
-  })
-  res.redirect("/")
+  
 })
 
 
