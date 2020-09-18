@@ -1,0 +1,9 @@
+- completare modulului 11
+- adugarea unei baze de date cu mongoDB,
+    a fost modificat o parte din codul pe pare il gaseam in app.js
+    pt a functiona cu mongoDB
+
+- crearea unei noi functi care permite creare uni noi liste
+        (creaza o alta pagina web)
+- creare une functi de delete
+- deploi code to Heroku
